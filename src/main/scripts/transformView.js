@@ -198,6 +198,7 @@ function transformView() {
 
     return {
         init: init,
+        containerToSVG: containerToSVG,
         transformNodes: transformNodes,
         transformLinks: transformLinks
     };

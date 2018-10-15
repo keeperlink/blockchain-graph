@@ -83,7 +83,7 @@ function Utils() {
 
     function parseTransform(transform) {
         if (transform) {
-            var matrix = {};
+            var matrix = {x: 0, y: 0, r:0, k: 1};
             var match = transform.match(/(\w+\((\-?\d+\.?\d*e?\-?\d*,?\s?)+\))+/g);
             for (var i = 0; i < match.length; i++) {
                 var s = match[i].match(/[\w\.\-]+/g), op = s[0];
@@ -100,6 +100,19 @@ function Utils() {
         }
     }
 
+    function toTransform(m) {
+        var transform = "";
+        if (m) {
+            if (isNumber(m.x) && isNumber(m.y)) {
+                transform = "translate(" + m.x + "," + m.y + ")";
+            }
+            if (isNumber(m.k)) {
+                transform += " scale(" + m.k + ")";
+            }
+        }
+        return transform;
+    }
+
     return {
         isFunction: isFunction,
         isNumber: isNumber,
@@ -110,7 +123,8 @@ function Utils() {
         gtime: gtime,
         eventMenu: eventMenu,
         downloadObjectAsJson: downloadObjectAsJson,
-        parseTransform: parseTransform
+        parseTransform: parseTransform,
+        toTransform: toTransform
     };
 }
 

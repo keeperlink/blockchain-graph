@@ -40,13 +40,9 @@ function InfoPanel() {
 
     function updateInfo(d) {
         clear();
-        if (d.labels) {
-            appendInfoElement('class', d, d.labels[0]);
-        } else {
-            appendInfoElement('class', d, d.type);
-        }
-        Object.keys(d.properties).forEach(function (property) {
-            appendInfoElement('property', d, property, d.properties[property]);
+        appendInfoElement('class', d, d.type);
+        Object.keys(d.prop).forEach(function (property) {
+            appendInfoElement('property', d, property, d.prop[property]);
         });
     }
 

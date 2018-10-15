@@ -32,7 +32,7 @@ function DrawGraphElements() {
                     if (opt.highlights) {
                         for (i = 0; i < opt.highlights.length; i++) {
                             var h = opt.highlights[i];
-                            if (d.labels[0] === h.class && d.properties[h.property] === h.value) {
+                            if (d.type === h.class && d.prop[h.property] === h.value) {
                                 classes += ' node-highlighted';
                                 break;
                             }
@@ -58,8 +58,7 @@ function DrawGraphElements() {
     }
 
     function toTitleString(d) {
-        var s = d.labels ? d.labels[0] : d.type;
-        return s + ' ' + JSON.stringify(d.properties).replace(/\"([^(\")"]+)\":/g, " $1: ");
+        return d.type + ' ' + JSON.stringify(d.prop).replace(/\"([^(\")"]+)\":/g, " $1: ");
     }
 
     function appendOutlineToNode(node) {
@@ -85,7 +84,7 @@ function DrawGraphElements() {
                 .attr('text-anchor', 'middle')
                 .attr('y', '4px')
                 .html(function (d) {
-                    return (d.properties.hasOwnProperty('amount')) ? d.properties.amount.toString().substring(0, 8) : (d.properties.block) ? d.properties.block : d.id;
+                    return (d.prop.hasOwnProperty('amount')) ? d.prop.amount.toString().substring(0, 8) : (d.prop.block) ? d.prop.block : d.id;
                 });
     }
 

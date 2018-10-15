@@ -42,7 +42,7 @@ function initGraph() {
         });
         $("#saveBtn").click(function () {
             $("#fileMenu").collapse('hide');
-            utils.downloadObjectAsJson(graphD3.data(), "blockchain.graph", function (fileName) {
+            utils.downloadObjectAsJson(graphD3.getExportData(), "blockchain.graph", function (fileName) {
                 if (fileName) {
                     alerts.success("Graph saved on your device in file \"" + fileName + "\"", 5000);
                 }
@@ -53,7 +53,7 @@ function initGraph() {
             $("#fileMenu").collapse('hide');
             var tm = new utils.Timer();
             var msg = alerts.info("Saving data to the " + upfsUrl + " ...", 30000);
-            ipfs.add(JSON.stringify(graphD3.data()), function (hash) {
+            ipfs.add(JSON.stringify(graphD3.getExportData()), function (hash) {
                 console.log('hash:', hash);
                 msg.remove();
                 if (hash) {
