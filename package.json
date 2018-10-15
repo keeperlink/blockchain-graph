@@ -1,12 +1,12 @@
 {
-  "name": "graphd3",
-  "version": "0.0.5",
+  "name": "blockchain-graph",
+  "version": "0.1.0",
   "description": "Blockchain Graph Vizualization",
   "main": "dist/js/bgraph.js",
   "bugs": {
-    "url": "https://github.com/keeperlink/graphd3/issues"
+    "url": "https://github.com/keeperlink/blockchain-graph/issues"
   },
-  "homepage": "https://github.com/keeperlink/graphd3",
+  "homepage": "https://blockchaingraph.org/",
   "directories": {
     "test": "test"
   },
@@ -15,7 +15,6 @@
     "test": "gulp test"
   },
   "keywords": [
-    "d3.js",
     "blockchain",
     "graph visualization"
   ],
@@ -25,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/keeperlink/graphd3.git"
+    "url": "https://github.com/keeperlink/blockchain-graph.git"
   },
   "license": "MIT",
   "devDependencies": {
