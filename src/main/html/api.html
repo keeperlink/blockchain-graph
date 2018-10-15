@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>API</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>API</h1>
+        <h2>Query entities:</h2>
+        <p>JSON POST: /api/node/expand</p>
+        <p>Body:</p>
+        <p><code>{
+                "entity": "f456b14e76e22370a102b93a64d1a927e5dd8cd37963dd3b0829fb9e111b7730",
+                "entityId": 1234560000003,
+                "level": 1,
+                "limit": 100,
+                "existing": [1234560000003,...]
+                }
+            </code></p>
+        <p>where
+        <ul>
+            <li>entity - contains address, transaction or block hash,</li>
+            <li>entityId - contains internal entity identifier (request should have either entity or entityId).</li>
+            <li>level - recursion level,</li>
+            <li>limit - maximum number of entities to query,</li>
+            <li>existing - array of entities to be excluded from request and also used for additional links retrieval</li>
+        </ul>
+    </body>
+</html>

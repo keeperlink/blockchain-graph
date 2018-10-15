@@ -1,0 +1,73 @@
+{
+  "name": "graphd3",
+  "version": "0.0.5",
+  "description": "Blockchain Graph Vizualization",
+  "main": "dist/js/bgraph.js",
+  "bugs": {
+    "url": "https://github.com/keeperlink/graphd3/issues"
+  },
+  "homepage": "https://github.com/keeperlink/graphd3",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "gulp",
+    "test": "gulp test"
+  },
+  "keywords": [
+    "d3.js",
+    "blockchain",
+    "graph visualization"
+  ],
+  "author": {
+    "name": "Sergei Goshko <serge@keeperlink.com>",
+    "url": "https://github.com/keeperlink"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keeperlink/graphd3.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "bootstrap": "^3.3.7",
+    "browserify": "^13.0.1",
+    "browserify-shim": "^3.8.12",
+    "chai": "^3.5.0",
+    "del": "^2.2.1",
+    "ecstatic": "^2.1.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-cache": "^0.4.5",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^5.0.0",
+    "gulp-cssnano": "^2.1.3",
+    "gulp-derequire": "^2.1.0",
+    "gulp-embedlr": "^0.5.2",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-if": "^2.0.1",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-inject": "^1.0.2",
+    "gulp-jshint": "^2.0.1",
+    "gulp-livereload": "^4.0.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-ruby-sass": "^2.1.0",
+    "gulp-uglify": "^3.0.1",
+    "gulp-uncache": "^0.4.0-beta1",
+    "gulp-util": "^3.0.7",
+    "gulp-version-number": "^0.1.7",
+    "http-server": "^0.11.1",
+    "ipfs-mini": "^1.1.2",
+    "jshint": "^2.9.3",
+    "karma": "^3.0.0",
+    "lodash": "^4.13.1",
+    "node-notifier": "^4.6.0",
+    "run-sequence": "^1.2.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0",
+    "wrench": "^1.5.9"
+  }
+}

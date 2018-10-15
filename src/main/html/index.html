@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127329317-1"></script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-127329317-1');</script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>Blockchain Graph Explorer</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/graphd3.css?v={version}"/>
+    </head>
+    <body onload="initGraph()">
+        <header>
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <a class="navbar-brand" href="#">BlockChain Graph</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="fileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                File
+                            </a>
+                            <ul class="dropdown-menu navbar-dark bg-dark" aria-labelledby="fileDropdown" id="fileMenu">
+                                <li class="nav-item"><a class="nav-link" href="#" id="loadBtn" title="Load Graph from File"> Load</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#" id="saveBtn" title="Save Graph to File"> Save to File</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#" id="saveIpfsBtn" title="Save Graph to IPFS and produce permanent link"> Save to IPFS</a></li>
+                                <li><div class="dropdown-divider"></div></li>
+                                <li class="nav-item"><a class="nav-link" href="#" id="clearBtn" title="Clear Graph"> Clear</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="releaseBtn" title="Release all pinned nodes">Release</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="viewDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                View: Transaction-Output
+                            </a>
+                            <ul class="dropdown-menu navbar-dark bg-dark" aria-labelledby="viewDropdown" id="viewMenu">
+                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewClassic" title="Classic View"> Classic</a></li>
+                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewTxOut" title="Transaction-Output View"> Transaction-Output</a></li>
+                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewW2W" title="Wallet-to-Wallet View"> Wallet-to-Wallet</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="form-inline mt-2 mt-md-0">
+                        <input class="form-control mr-sm-2" id="addInput" size="66" type="text" placeholder="Address / Transaction / Block hash" aria-label="Address / Transaction / Block hash">
+                        <button class="btn btn-outline-success my-2 my-sm-0" id="addButton" type="submit">Add</button>
+                    </form>
+                </div>
+            </nav>
+        </header>
+
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted credit">&copy; 2018 BlockChain Graph Explorer <a href="https://github.com/keeperlink/blockchain-graph" target="_blank">Source code</a></p>
+                <p class="text-muted"><a class="nav-link" href="api.html" target="_blank" title="API"> API</a></p>
+            </div>
+        </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+        <script src="js/bgraph.js?v={version}"></script>
+    </body>
+</html>
