@@ -3,7 +3,7 @@ WORKDIR /code
 COPY gulp ./gulp
 COPY src ./src
 COPY package.json gulpfile.js .jshintrc ./
-RUN npm install && gulp prod_build
+RUN npm install && gulp prod_build && rm -fr node_modules .sass-cache src gulp
 
 
 FROM nginx:alpine
