@@ -116,7 +116,7 @@ function initGraph() {
     function loadData() {
         var param = window.location.hash ? window.location.hash.substr(1) : null;
         if (!param) {
-            param = '587430e52af2cec98b3fd543083469ffa7a5f5dd2bd569898a7897a64e2eb031';
+            param = 'ipfs-QmUGqiif3ug3Xsk9WQwkjMkkPh6sY7jptKaJ1Xavtxwjo7';
         }
         if (param.startsWith('ipfs-')) {
             var hash = param.substr(5);
