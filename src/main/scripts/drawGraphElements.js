@@ -85,7 +85,7 @@ function DrawGraphElements() {
                 .attr('text-anchor', 'middle')
                 .attr('y', '4px')
                 .html(function (d) {
-                    return (d.properties.amount) ? d.properties.amount.toString().substring(0, 8) : (d.properties.block) ? d.properties.block : d.id;
+                    return (d.properties.hasOwnProperty('amount')) ? d.properties.amount.toString().substring(0, 8) : (d.properties.block) ? d.properties.block : d.id;
                 });
     }
 
