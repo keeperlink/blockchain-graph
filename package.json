@@ -29,10 +29,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "bootstrap": "^3.3.7",
-    "browserify": "^13.0.1",
-    "browserify-shim": "^3.8.12",
-    "chai": "^3.5.0",
+    "browserify": "^16.2.3",
+    "browserify-shim": "^3.8.14",
     "del": "^2.2.1",
     "ecstatic": "^2.1.0",
     "gulp": "^3.9.1",
