@@ -315,14 +315,15 @@ function GraphD3(_selector, _options) {
             utils.gtime('api', 'expand', tm.time());
             if (callback) {
                 if (data) {
-                    if ((data.nodes && data.nodes.length > 0) || (data.links && data.links.length > 0)) {
-                        callback();
-                    } else {
-                        callback("No data found");
-                    }
+                    callback(null, data);
                 } else {
-                    callback("Unable to load data");
+                    callback("Unable to load data", data);
                 }
+            }
+        }).catch(function (err) {
+            console.log("updateFromUrl: err:", err);
+            if (callback) {
+                callback("Unable to load data. Server error");
             }
         });
     }

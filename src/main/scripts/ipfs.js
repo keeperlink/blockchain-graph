@@ -5,26 +5,25 @@
 /**
  * IPFS save and load json objects.
  * 
- * @param {type} _publishProviders array of publish providers.
- * @param {type} _publicServers optional list of public IPFS gateways.
+ * @param {type} _viewServers array of public IPFS gateways.
+ * @param {type} _pushServers array of publish providers.
  * @returns {new Ipfs() instance}
  */
-function Ipfs(_publishProviders, _publicServers) {
+function Ipfs(_viewServers, _pushServers) {
 
-    var publicServers = _publicServers ? _publicServers :
-            ['https://ipfs.btcgraph.org', 'https://ipfs.io', 'https://ipfs.infura.io', 'https://cloudflare-ipfs.com'];
+    var viewServers = _viewServers ? _viewServers : ['https://cloudflare-ipfs.com'];
     var defaultGetAttempts = 5;
     var defaultAddAttempts = 5;
-    var defaultProv = {
+    var defaultPushServer = {
         url: '',
         pinning: true,
         path: '/api/v0/add'};
-    var publishProviders = Array.isArray(_publishProviders) ? _publishProviders.map(function (a) {
+    var pushServers = Array.isArray(_pushServers) ? _pushServers.map(function (a) {
         if (typeof a === 'string') {
             a = {url: a};
         }
-        return Object.assign(Object.create(defaultProv), a);
-    }) : [defaultProv];
+        return Object.assign(Object.create(defaultPushServer), a);
+    }) : [defaultPushServer];
 
     function addData(data, callback, attempts) {
         if (typeof attempts !== 'number') {
@@ -32,7 +31,7 @@ function Ipfs(_publishProviders, _publicServers) {
         }
         var formData = new FormData();
         formData.append('path', data);
-        var prov = publishProviders[Math.floor(Math.random() * publishProviders.length)];
+        var prov = pushServers[Math.floor(Math.random() * pushServers.length)];
         var url = prov.url + prov.path + (prov.pinning ? '?pin=true' : '');
         console.log("IPFS add url:", url);
         d3.json(url, {
@@ -55,7 +54,7 @@ function Ipfs(_publishProviders, _publicServers) {
         if (typeof attempts !== 'number') {
             attempts = defaultGetAttempts;
         }
-        var url = publicServers[Math.floor(Math.random() * publicServers.length)] + '/ipfs/' + ipfsHash;
+        var url = viewServers[Math.floor(Math.random() * viewServers.length)] + '/ipfs/' + ipfsHash;
         console.log("IPFS load url:", url);
         d3.json(url)
                 .then(callback)

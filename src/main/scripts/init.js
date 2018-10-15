@@ -10,10 +10,13 @@ var Ipfs = require('./ipfs');
 function initGraph() {
     var utils = new Utils();
     var alerts = new Alerts();
-    var ipfs = new Ipfs(['https://ipfs.btcgraph.org:5001', 'https://ipfs.infura.io:5001']);
+    var ipfs = new Ipfs(
+            ['https://ipfs.btcgraph.org', 'https://ipfs.io', 'https://gateway.ipfs.io', 'https://ipfs.infura.io', 'https://hardbin.com', 'https://siderus.io', 'https://cloudflare-ipfs.com'],
+            ['https://ipfs.btcgraph.org:5001', 'https://ipfs.infura.io:5001']);
     var upfsUrl = "<a href='https://ipfs.io' target='_blank'>IPFS</a>";
 
     var baseUrl = window.location.hostname === 'localhost' ? 'http://localhost:8090/api/' : '/api/';
+    var expandUrl = baseUrl + 'node/expand';
 
     var graphD3 = new GraphD3({
         viewMode: "TxOut",
@@ -28,7 +31,13 @@ function initGraph() {
             "output": "#ff928c"
         },
         onNodeDoubleClick: function (node) {
-            graphD3.updateFromUrl(baseUrl + 'node/expand', {"entityId": node.id, "level": 1, "limit": 50}, {x: node.x, y: node.y});
+            var msg = alerts.info("Loading data ...", 30000);
+            graphD3.updateFromUrl(expandUrl, {"entityId": node.id, "level": 1, "limit": 50}, {x: node.x, y: node.y}, function (err, data) {
+                msg.remove();
+                if (err) {
+                    alerts.error(err, 5000);
+                }
+            });
             utils.gevent('graph', 'expand');
         }
     });
@@ -36,7 +45,15 @@ function initGraph() {
     function initMenu() {
         $("#addButton").click(function () {
             var param = $("#addInput").val();
-            graphD3.updateFromUrl(baseUrl + 'node/expand', {"entity": param, "level": 1, "limit": 50});
+            var msg = alerts.info("Loading data ...", 30000);
+            graphD3.updateFromUrl(expandUrl, {"entity": param, "level": 1, "limit": 50}, null, function (err, data) {
+                msg.remove();
+                if (err) {
+                    alerts.error("Unable to load data", 5000);
+                } else if (data && data.nodes.length === 0 && data.links && data.links.length === 0) {
+                    alerts.warning("No new data found", 2000);
+                }
+            });
             utils.eventMenu('add', 'param', param);
             return false;
         });
@@ -137,7 +154,7 @@ function initGraph() {
             });
         } else {
             var msg2 = alerts.info("Loading data ...", 30000);
-            graphD3.updateFromUrl(baseUrl + 'node/expand', {"entity": param, "level": 1, "limit": 50}, null, function (err) {
+            graphD3.updateFromUrl(expandUrl, {"entity": param, "level": 1, "limit": 50}, null, function (err) {
                 msg2.remove();
                 if (err) {
                     alerts.error("Unable to load data", 5000);
