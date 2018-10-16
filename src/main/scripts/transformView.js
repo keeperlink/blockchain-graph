@@ -6,41 +6,40 @@ var Utils = require('./utils');
 
 function transformView() {
     var utils = new Utils();
-    var container, svgNode, lniksNode, svgVisibleRect, minDistToRedraw;
+    var drawGraphElements;
+    var container, svgNode, linksNode, svgVisibleRect, minDistToRedraw;
 
-    function init(_container) {
+    function init(_container, _drawGraphElements) {
         container = _container;
-        svgNode = document.getElementById("graph-svg");
-        lniksNode = d3.select('.links').node();
-    }
-    function transformNodes(node) {
-        if (node) {
-            node.attr('transform', function (d) {
-                return 'translate(' + d.x + ', ' + d.y + ')';
-            });
-        }
+        drawGraphElements = _drawGraphElements;
+        svgNode = container.select("SVG").node();
+        linksNode = container.select(".links").node();
     }
 
-    function transformLinks(svgLinks, nodeRadius, arrowSize) {
-        if (svgLinks) {
-            var containerRect = container.node().getBoundingClientRect();
-            var p = containerToSVG(-nodeRadius, -nodeRadius);
-            var r = containerToSVG(containerRect.width + nodeRadius, containerRect.height + nodeRadius);
-            svgVisibleRect = {left: p.x, top: p.y, right: r.x, bottom: r.y};
-            minDistToRedraw = (svgVisibleRect.right - svgVisibleRect.left) / (containerRect.width + nodeRadius * 2);
-            var link = svgLinks.selectAll('.link').filter(needRedraw);
+    function transformNodes() {
+        container.selectAll('.node').attr('transform', function (d) {
+            return 'translate(' + d.x + ', ' + d.y + ')';
+        });
+    }
+
+    function transformLinks(nodeRadius, arrowSize) {
+        var containerRect = container.node().getBoundingClientRect();
+        var p = containerToSVG(-nodeRadius, -nodeRadius);
+        var r = containerToSVG(containerRect.width + nodeRadius, containerRect.height + nodeRadius);
+        svgVisibleRect = {left: p.x, top: p.y, right: r.x, bottom: r.y};
+        minDistToRedraw = (svgVisibleRect.right - svgVisibleRect.left) / (containerRect.width + nodeRadius * 2);
+        var link = container.selectAll('.link').filter(needRedraw);
 //            console.log("total:", svgLinks.selectAll('.link').size(), ',needRedraw:', link.size(), ', minDistToRedraw:', minDistToRedraw);
-            transformLinksLines(link);
-            transformLinksTexts(link.selectAll('.text'));
-            transformLinksOutlines(link, nodeRadius, arrowSize);
-            transformLinksOverlays(link.selectAll('.overlay'));
-            link.each(function (n) {
-                n.sx = n.source.x;
-                n.sy = n.source.y;
-                n.tx = n.target.x;
-                n.ty = n.target.y;
-            });
-        }
+        transformLinksLines(link);
+        transformLinksOutlines(link, nodeRadius, arrowSize);
+        transformLinksOverlays(link.selectAll('.overlay'));
+        transformLinksTexts(link.selectAll('.text'));
+        link.each(function (n) {
+            n.sx = n.source.x;
+            n.sy = n.source.y;
+            n.tx = n.target.x;
+            n.ty = n.target.y;
+        });
     }
 
     function needRedraw(link) {
@@ -48,7 +47,7 @@ function transformView() {
                 !nodeMoved(link.target.x, link.target.y, link.tx, link.ty)) {
             return false;
         }
-        return isVisible(link.source) || isVisible(link.target);
+        return isVisible(link.source) || isVisible(link.target) || isVisible({x: link.sx, y: link.sy}) || isVisible({x: link.tx, y: link.ty});
     }
 
     function nodeMoved(curX, curY, lastX, lastY) {
@@ -64,7 +63,7 @@ function transformView() {
         var svgPount = svgNode.createSVGPoint();
         svgPount.x = containerX;
         svgPount.y = containerY;
-        return svgPount.matrixTransform(document.getElementById("links-svg").getScreenCTM().inverse());
+        return svgPount.matrixTransform(linksNode.getScreenCTM().inverse());
     }
 
     function transformLinksLines(link) {
@@ -77,18 +76,21 @@ function transformView() {
     }
 
     function transformLinksOutlines(link, nodeRadius, arrowSize) {
-        link.each(function () {
-            var rel = d3.select(this),
-                    outline = rel.select('.outline'),
-                    text = rel.select('.text');
+        var center = {x: 0, y: 0};
+        link.each(function (s) {
+            var rel = d3.select(this);
+            var outline = rel.select('.outline');
+            var text = rel.select('.text');
+            text = text.empty() && drawGraphElements.linkHasText(s) ? drawGraphElements.appendTextToLink(rel) : text;
+//                console.log('[1] text.empty():',this,s,rel, text.empty(),drawGraphElements.linkHasText(s));
 //                    bbox = text.node().getBBox(),
 //                    padding = 3;
 
             outline.attr('d', function (d) {
-                var center = {x: 0, y: 0},
-                        angle = rotation(d.source, d.target),
-                        textBoundingBox = text.node().getBBox(),
-                        textPadding = 4;
+//                console.log('[2] text.empty():', d, text.empty(),drawGraphElements.linkHasText(d));
+                var angle = rotation(d.source, d.target),
+                        textPadding = 4,
+                        textBoundingBox = text.empty() ? {width: -textPadding} : text.node().getBBox();
                 var u = unitaryVector(d.source, d.target);
                 if (isNaN(u.x) || isNaN(u.y)) {
                     return '';

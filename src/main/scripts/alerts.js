@@ -7,7 +7,7 @@ function Alerts() {
     function getPanel() {
         var panel = d3.select('.page-alerts');
         if (panel.empty()) {
-            panel = d3.select('body').append('div').attr('class', 'page-alerts');
+            panel = d3.select('main').append('div').attr('class', 'page-alerts');
         }
         return panel;
     }

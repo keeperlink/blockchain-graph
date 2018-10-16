@@ -144,7 +144,7 @@ function initGraph() {
                 msg.remove();
                 if (data) {
                     graphD3.updateWithData(data, null, true);
-                    alerts.success("Graph loaded from the " + upfsUrl, 3000);
+                    alerts.success("Graph with " + data.nodes.length + " nodes and " + data.links.length + " relations loaded from the " + upfsUrl, 5000);
                     utils.gtime('api', 'ipfs.load', tm.time());
                     utils.gevent('graph', 'ipfs.load', 'success');
                 } else {

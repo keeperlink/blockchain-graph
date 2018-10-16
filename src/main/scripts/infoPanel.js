@@ -6,8 +6,8 @@ function InfoPanel() {
 
     var info, colorFunc;
 
-    function init(container, colorFunction) {
-        info = container.append('div').attr('class', 'graphd3-info');
+    function init(colorFunction) {
+        info = d3.select('MAIN').append('div').attr('class', 'graphd3-info');
         colorFunc = colorFunction;
     }
 

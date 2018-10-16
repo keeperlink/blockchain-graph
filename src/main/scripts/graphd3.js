@@ -13,10 +13,10 @@ function GraphD3(_selector, _options) {
     var infoPanel = new InfoPanel();
     var drawGraphElements = new DrawGraphElements();
     var dataPorter = new DataPorter();
-    var container, nodes = [], links = [], simulation, svg, svgNodes, svgLinks,
-            nodeClasses2colors = {},
-            linkClasses2colors = {},
-            numClasses = 0;
+
+    var container, simulation, svg, svgg, svgNodes, svgLinks;
+    var nodeClasses2colors = {}, linkClasses2colors = {}, numClasses = 0;
+    var nodes = [], links = [];
     var zoom = d3.zoom();
     var options = {
         viewMode: "",
@@ -36,13 +36,9 @@ function GraphD3(_selector, _options) {
 
     function init(_options) {
         utils.merge(options, _options);
-        container = d3.select('.graphD3');
-        if (container.empty()) {
-            container = d3.select('body').append('div').attr('class', 'graphD3').attr('class', 'graph-cont');
-        }
-        container.attr('class', 'graphd3').html('');
-        infoPanel.init(container, entityColor);
-        drawGraphElements.init({
+        createGraphContainer();
+        infoPanel.init(entityColor);
+        drawGraphElements.init(container, {
             highlights: options.highlights,
             nodeRadius: options.nodeRadius,
             entityColor: entityColor,
@@ -64,62 +60,72 @@ function GraphD3(_selector, _options) {
                 }
             }
         });
-        appendGraph(container);
-        transformView.init(container);
+        transformView.init(container, drawGraphElements);
         simulation = d3.forceSimulation()
-                .force("charge", d3.forceManyBody().strength(-10))
+                .force("charge", d3.forceManyBody().strength(-30))
                 .force("link", d3.forceLink(links).distance(100).id(function (d) {
                     return d.id;
                 }))
                 .force('collide', d3.forceCollide(options.nodeRadius * 2).strength(0.2))
-                .alphaTarget(1)
-                .on('tick', onTick);
+                .on('tick', onSimulationTick)
+                .on('end', onSimulationStop);
     }
 
-    function appendGraph(container) {
+    function createGraphContainer() {
+        container = d3.select('.graphD3');
+        if (container.empty()) {
+            container = d3.select('body')
+                    .append('div')
+                    .attr('class', 'graphD3');
+        }
+        container.attr('class', 'graphd3').html('');
+
         svg = container.append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('class', 'graphd3-graph')
-                .attr('id', 'graph-svg')
                 .call(zoom.on('zoom', function () {
-                    svg.attr('transform', d3.event.transform.toString());
-                    onTick();
+                    svgg.attr('transform', d3.event.transform.toString());
+                    onSimulationTick();
                 }))
                 .call(d3.drag()
-                        .on('start', onTick)
-                        .on('drag', onTick)
-                        .on('end', onTick))
-                .on('dblclick.zoom', null)
-                .append('g')
-                .attr('width', '100%')
-                .attr('height', '100%');
+                        .on('start', onSimulationTick)
+                        .on('drag', onSimulationTick)
+                        .on('end', onSimulationTick))
+                .on('dblclick.zoom', undefined)
+                .on('click', onGraphClick);
 
-        svgLinks = svg.append('g')
+        svgg = svg.append('g');
+
+        svgLinks = svgg.append('g')
                 .attr('class', 'links')
                 .attr('id', 'links-svg');
 
-        svgNodes = svg.append('g')
+        svgNodes = svgg.append('g')
                 .attr('class', 'nodes');
     }
+
 
 //******************************************************************************
 // Event Handlers
 
-//    var tickCounter=0;
-    function onTick() {
-//        if (++tickCounter < 2) return;
-//        tickCounter=0;
+    function onSimulationTick() {
 //        var tm = new utils.Timer();
-        transformView.transformNodes(svgNodes.selectAll('.node'));
+        transformView.transformNodes();
 //        var nodesTime = tm.time();
-        transformView.transformLinks(svgLinks, options.nodeRadius, options.arrowSize);
+        transformView.transformLinks(options.nodeRadius, options.arrowSize);
 //        console.log("Tick time:", nodesTime, tm.time());
+    }
 
-//p.x = 10; p.y = 10;
-//var svgP = p.matrixTransform(svgNodes.node().getScreenCTM().inverse());
-//var svgP = $('.links').get(0).getScreenCTM().inverse().multiply($('.graphd3-svg').get(0).getScreenCTM()).translate(10,10);
-//console.log(container.node().getBoundingClientRect(), svg.attr('transform'));
+    function onSimulationStop() {
+        //simulation.alpha(1).restart();
+    }
+
+    function onGraphClick() {
+//        console.log(d3.event.target, svg.node());
+        if (d3.event.target === svg.node()) {
+            simulation.alpha(1).restart();
+        }
     }
 
     function onNodeClick(d) {
@@ -188,11 +194,9 @@ function GraphD3(_selector, _options) {
     function clear() {
         nodes = [];
         links = [];
-        simulation.nodes(nodes);
-        simulation.force('link').links(links);
-        svgNodes.selectAll(".node").remove();
-        svgLinks.selectAll(".link").remove();
+        drawGraphElements.clear();
         infoPanel.clear();
+        updateSimulation();
     }
 
     function stickNode(d, temp) {
@@ -214,11 +218,23 @@ function GraphD3(_selector, _options) {
         nodes.forEach(function (d) {
             unstickNode(d);
         });
-        simulation.alphaTarget(0).restart();
+        restartSimulation();
     }
 
 //******************************************************************************
 // Coloring
+
+    function updateSimulation(restart){
+        simulation.nodes(nodes);
+        simulation.force('link').links(links);
+        if (restart){
+            restartSimulation();
+        }
+    }
+
+    function restartSimulation() {
+        simulation.alpha(1).restart();
+    }
 
     function nodeColor(cls) {
         var color = nodeClasses2colors[cls];
@@ -301,7 +317,7 @@ function GraphD3(_selector, _options) {
             return d.id;
         }));
         if (!pos) {
-            var cli = svg.node().parentElement.parentElement;
+            var cli = svg.node().parentElement;
             pos = transformView.containerToSVG(cli.clientWidth / 2, cli.clientHeight / 2);
         }
         d3.json(url, {
@@ -341,22 +357,21 @@ function GraphD3(_selector, _options) {
             });
         }
         if (data.transform) {
-            var tra = data.transform;
-            var c = container.select(".graphd3-graph");
-            c.call(zoom.transform, d3.zoomIdentity.translate(tra.x, tra.y).scale(tra.k));
+            var t = data.transform;
+            svg.call(zoom.transform, d3.zoomIdentity.translate(t.x, t.y).scale(t.k));
         }
         updateLinks(data.links);
         updateNodes(data.nodes);
         simulation.nodes(nodes);
         simulation.force('link').links(links);
-        simulation.alphaTarget(0).restart();
+        simulation.alpha(1).restart();
     }
 
     function getExportData() {
         return dataPorter.exportData({
             nodes: nodes,
             links: links,
-            transform: svg.attr('transform')
+            transform: svgg.attr('transform')
         });
     }
 
@@ -367,7 +382,7 @@ function GraphD3(_selector, _options) {
         Array.prototype.push.apply(nodes, newNodesData.filter(function (a) {
             return ids.indexOf(a.id) === -1;
         }));
-        var newNodes = svgNodes.selectAll('.node')
+        var newNodes = container.select('.nodes').selectAll('.node')
                 .data(nodes, function (d) {
                     return d.id;
                 }).enter();
@@ -382,7 +397,7 @@ function GraphD3(_selector, _options) {
             return ids.indexOf(a.id) === -1;
         }));
 
-        var newLinks = svgLinks.selectAll('.link')
+        var newLinks = container.select('.links').selectAll('.link')
                 .data(links, function (d) {
                     return d.id;
                 }).enter();

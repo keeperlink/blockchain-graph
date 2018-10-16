@@ -3,25 +3,26 @@
 'use strict';
 
 function DrawGraphElements() {
-    var opt;
+    var container, opt;
 
-    function init(options) {
+    function init(_container, options) {
+        container = _container;
         opt = options;
     }
 
     function appendNodesToGraph(newNodes) {
-        var nodeSvg = appendNode(newNodes);
-        appendRingToNode(nodeSvg);
-        appendOutlineToNode(nodeSvg);
-        appendTextToNode(nodeSvg);
-        return nodeSvg;
+        var nodeG = appendNode(newNodes);
+        appendRingToNode(nodeG);
+        appendOutlineToNode(nodeG);
+        appendTextToNode(nodeG);
+        return nodeG;
     }
 
     function appendLinksToGraph(newLinks) {
         var linkSvg = appendLink(newLinks);
         appendOutlineToLink(linkSvg);
         appendOverlayToLink(linkSvg);
-        appendTextToLink(linkSvg);
+//        appendTextToLink(linkSvg);
     }
 
     function appendNode(node) {
@@ -74,7 +75,8 @@ function DrawGraphElements() {
     }
 
     function appendTextToNode(node) {
-        return node.append('text')
+        return node.filter(nodeHasText)
+                .append('text')
                 .attr('class', function (d) {
                     return 'text';
                 })
@@ -83,9 +85,7 @@ function DrawGraphElements() {
                 .attr('pointer-events', 'none')
                 .attr('text-anchor', 'middle')
                 .attr('y', '4px')
-                .html(function (d) {
-                    return (d.prop.hasOwnProperty('amount')) ? d.prop.amount.toString().substring(0, 8) : (d.prop.block) ? d.prop.block : d.id;
-                });
+                .html(getNodeText);
     }
 
 
@@ -118,16 +118,40 @@ function DrawGraphElements() {
                 .attr('font-size', '8px')
                 .attr('pointer-events', 'none')
                 .attr('text-anchor', 'middle')
-                .text(function (d) {
-                    return d.type;
-                });
+                .text(getLinkText);
+    }
+
+    function nodeHasText(d) {
+        return getNodeText(d) !== undefined;
+    }
+
+    function getNodeText(d) {
+        return (d.prop.hasOwnProperty('amount')) ? d.prop.amount.toString().substring(0, 8) : (d.prop.block) ? d.prop.block : d.id;
+    }
+
+    function linkHasText(d) {
+        return getLinkText(d) !== undefined;
+    }
+
+    function getLinkText(d) {
+        return d.type;
+    }
+
+    function clear() {
+        container.selectAll(".node").remove();
+        container.selectAll(".link").remove();
     }
 
     return {
         init: init,
         appendNodesToGraph: appendNodesToGraph,
-        appendLinksToGraph: appendLinksToGraph
-
+        appendLinksToGraph: appendLinksToGraph,
+        appendTextToLink: appendTextToLink,
+        nodeHasText: nodeHasText,
+        getNodeText: getNodeText,
+        linkHasText: linkHasText,
+        getLinkText: getLinkText,
+        clear: clear
     };
 }
 
