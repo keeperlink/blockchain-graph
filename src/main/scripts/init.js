@@ -22,7 +22,7 @@ function initGraph() {
         viewMode: "TxOut",
         nodeRadius: 25,
         nodeColors: {
-            "block": "#405f9e",
+            "address": "#a5abb6",
             "transaction": "#f2baf6",
             "output": "#fcea7e"
         },
@@ -98,6 +98,7 @@ function initGraph() {
                 fr.onload = function (e) {
                     var data = JSON.parse(e.target.result);
                     graphD3.updateWithData(data, null, true);
+                    $("#viewDropdown").html("View:" + $("#view" + graphD3.viewMode()).text());
                     inp.remove();
                     alerts.success("File loaded", 2000);
                 };
@@ -145,6 +146,8 @@ function initGraph() {
                 if (data) {
                     graphD3.updateWithData(data, null, true);
                     alerts.success("Graph with " + data.nodes.length + " nodes and " + data.links.length + " relations loaded from the " + upfsUrl, 5000);
+                    console.log('graphD3.viewMode():',graphD3.viewMode(),$("#view" + graphD3.viewMode()).text());
+                    $("#viewDropdown").html("View:" + $("#view" + graphD3.viewMode()).text());
                     utils.gtime('api', 'ipfs.load', tm.time());
                     utils.gevent('graph', 'ipfs.load', 'success');
                 } else {
@@ -160,6 +163,7 @@ function initGraph() {
                     alerts.error("Unable to load data", 5000);
                 } else {
                     alerts.success("Data loaded", 1000);
+                    $("#viewDropdown").html("View:" + $("#view" + graphD3.viewMode()).text());
                 }
             });
         }

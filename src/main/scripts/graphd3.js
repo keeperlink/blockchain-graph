@@ -224,10 +224,10 @@ function GraphD3(_selector, _options) {
 //******************************************************************************
 // Coloring
 
-    function updateSimulation(restart){
+    function updateSimulation(restart) {
         simulation.nodes(nodes);
         simulation.force('link').links(links);
-        if (restart){
+        if (restart) {
             restartSimulation();
         }
     }
@@ -310,6 +310,10 @@ function GraphD3(_selector, _options) {
 
     function updateFromUrl(url, body, pos, callback) {
         var tm = new utils.Timer();
+        body.entityTypes = ['transaction', 'output'];
+        if (options.viewMode === 'TxOutAddr') {
+            body.entityTypes = ['transaction', 'output', 'address'];
+        }
         body.viewMode = options.viewMode;
         body.existing = nodes.map(function (d) {
             return d.id;
@@ -360,6 +364,9 @@ function GraphD3(_selector, _options) {
             var t = data.transform;
             svg.call(zoom.transform, d3.zoomIdentity.translate(t.x, t.y).scale(t.k));
         }
+        if (data.viewMode) {
+            options.viewMode = data.viewMode;
+        }
         updateLinks(data.links);
         updateNodes(data.nodes);
         simulation.nodes(nodes);
@@ -371,7 +378,8 @@ function GraphD3(_selector, _options) {
         return dataPorter.exportData({
             nodes: nodes,
             links: links,
-            transform: svgg.attr('transform')
+            transform: svgg.attr('transform'),
+            viewMode: options.viewMode
         });
     }
 

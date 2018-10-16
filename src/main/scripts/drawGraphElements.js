@@ -126,7 +126,7 @@ function DrawGraphElements() {
     }
 
     function getNodeText(d) {
-        return (d.prop.hasOwnProperty('amount')) ? d.prop.amount.toString().substring(0, 8) : (d.prop.block) ? d.prop.block : d.id;
+        return (d.prop.hasOwnProperty('amount')) ? d.prop.amount.toString().substr(0, 8) : (d.prop.block) ? d.prop.block : (d.prop.address) ? d.prop.address.substr(0, 3) + '..' + d.prop.address.substr(d.prop.address.length - 3) : d.id;
     }
 
     function linkHasText(d) {
@@ -134,7 +134,7 @@ function DrawGraphElements() {
     }
 
     function getLinkText(d) {
-        return d.type;
+        return d.type !== 'address' ? d.type : undefined;
     }
 
     function clear() {

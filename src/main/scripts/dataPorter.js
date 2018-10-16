@@ -34,7 +34,8 @@ function DataPorter() {
             version: dataVersion,
             nodes: newNodes,
             links: newLinks,
-            transform: utils.parseTransform(internalData.transform)
+            transform: utils.parseTransform(internalData.transform),
+            viewMode: internalData.viewMode
         };
     }
 
