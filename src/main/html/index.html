@@ -26,9 +26,9 @@
                                 File
                             </a>
                             <ul class="dropdown-menu navbar-dark bg-dark" aria-labelledby="fileDropdown" id="fileMenu">
-                                <li class="nav-item"><a class="nav-link" href="#" id="loadBtn" title="Load Graph from File"> Load</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#" id="saveBtn" title="Save Graph to File"> Save to File</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#" id="saveIpfsBtn" title="Save Graph to IPFS and produce permanent link"> Save to IPFS</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link" href="#" id="loadBtn" title="Load Graph from File"> Load</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link" href="#" id="saveBtn" title="Save Graph to File"> Save to File</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link" href="#" id="saveIpfsBtn" title="Save Graph to IPFS and produce permanent link"> Save to IPFS</a></li>
                                 <li><div class="dropdown-divider"></div></li>
                                 <li class="nav-item"><a class="nav-link" href="#" id="clearBtn" title="Clear Graph"> Clear</a></li>
                             </ul>
@@ -36,15 +36,18 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#" id="releaseBtn" title="Release all pinned nodes">Release</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="connectBtn" title="Search for connections between nodes in the graph">Connect</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="viewDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 View: Transaction-Output
                             </a>
                             <ul class="dropdown-menu navbar-dark bg-dark" aria-labelledby="viewDropdown" id="viewMenu">
-                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewClassic" title="Classic View"> Classic</a></li>
-                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewTxOut" title="Transaction-Output View"> Transaction-Output</a></li>
-                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewTxOutAddr" title="Transaction-Output-Address View"> Tx-Out-Addr</a></li>
-                                <li class="nav-item"><a class="nav-link viewLink" href="#" id="viewW2W" title="Wallet-to-Wallet View"> Wallet-to-Wallet</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link viewLink" href="#" id="viewClassic" title="Classic View"> Classic</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link viewLink" href="#" id="viewTxOut" title="Transaction-Output View"> Transaction-Output</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link viewLink" href="#" id="viewTxOutAddr" title="Transaction-Output-Address View"> Tx-Out-Addr</a></li>
+                                <li class="nav-item" data-toggle="collapse"><a class="nav-link viewLink" href="#" id="viewW2W" title="Wallet-to-Wallet View"> Wallet-to-Wallet</a></li>
                             </ul>
                         </li>
                     </ul>

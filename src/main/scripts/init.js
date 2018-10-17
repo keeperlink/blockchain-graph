@@ -1,4 +1,4 @@
-/* global $, d3, FileReader, window, document */
+/* global $, d3, bootbox, FileReader, window, document */
 /* j s h int latedef:nofunc */
 'use strict';
 
@@ -11,12 +11,14 @@ function initGraph() {
     var utils = new Utils();
     var alerts = new Alerts();
     var ipfs = new Ipfs(
-            ['https://ipfs.btcgraph.org', 'https://ipfs.io', 'https://gateway.ipfs.io', 'https://ipfs.infura.io', 'https://hardbin.com', 'https://siderus.io', 'https://cloudflare-ipfs.com'],
-            ['https://ipfs.btcgraph.org:5001', 'https://ipfs.infura.io:5001']);
+            ['https://dev2.btcgraph.org', 'https://cloudflare-ipfs.com'],
+            ['https://dev2.btcgraph.org:5001']);
     var upfsUrl = "<a href='https://ipfs.io' target='_blank'>IPFS</a>";
 
     var baseUrl = window.location.hostname === 'localhost' ? 'http://localhost:8090/api/' : '/api/';
     var expandUrl = baseUrl + 'node/expand';
+    var connectUrl = baseUrl + 'node/connections';
+    var connectLevel = "1";
 
     var graphD3 = new GraphD3({
         viewMode: "TxOut",
@@ -114,6 +116,27 @@ function initGraph() {
             alerts.success("All sticky nodes have been released", 2000);
             return false;
         });
+        $("#connectBtn").click(function () {
+            bootbox.prompt({title: "How deep to search (1=search for direct connections between existing nodes only) [1-6]: ", value: connectLevel, callback: function (level) {
+                    if (level) {
+                        utils.eventMenu('connect', 'level', level);
+                        connectLevel = level;
+                        var msg = alerts.info("Searching for connections...", 300000);
+                        graphD3.updateFromUrl(connectUrl, {"level": level, "limit": 100}, null, function (err, data) {
+                            msg.remove();
+                            if (err) {
+                                alerts.error(err, 5000);
+                            } else if (data.links && data.links.length > 0) {
+                                alerts.success("Found " + data.links.length + " new connections" + (data.message ? ". (" + data.message + ")" : ""), 20000);
+                            } else {
+                                alerts.warning("No new connections found", 2000);
+                            }
+                        });
+                    }
+                }});
+
+            return false;
+        });
         $("#clearBtn").click(function () {
             $("#fileMenu").collapse('hide');
             graphD3.clear();
@@ -146,7 +169,7 @@ function initGraph() {
                 if (data) {
                     graphD3.updateWithData(data, null, true);
                     alerts.success("Graph with " + data.nodes.length + " nodes and " + data.links.length + " relations loaded from the " + upfsUrl, 5000);
-                    console.log('graphD3.viewMode():',graphD3.viewMode(),$("#view" + graphD3.viewMode()).text());
+                    console.log('graphD3.viewMode():', graphD3.viewMode(), $("#view" + graphD3.viewMode()).text());
                     $("#viewDropdown").html("View:" + $("#view" + graphD3.viewMode()).text());
                     utils.gtime('api', 'ipfs.load', tm.time());
                     utils.gevent('graph', 'ipfs.load', 'success');
