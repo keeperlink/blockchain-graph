@@ -121,7 +121,7 @@ function initGraph() {
                     if (level) {
                         utils.eventMenu('connect', 'level', level);
                         connectLevel = level;
-                        var msg = alerts.info("Searching for connections...", 300000);
+                        var msg = alerts.info('Searching for connections... <i class="fa fa-spinner" aria-hidden="true"></i>', 300000);
                         graphD3.updateFromUrl(connectUrl, {"level": level, "limit": 100}, null, function (err, data) {
                             msg.remove();
                             if (err) {
@@ -129,7 +129,7 @@ function initGraph() {
                             } else if (data.links && data.links.length > 0) {
                                 alerts.success("Found " + data.links.length + " new connections" + (data.message ? ". (" + data.message + ")" : ""), 20000);
                             } else {
-                                alerts.warning("No new connections found", 2000);
+                                alerts.warning("No new connections found" + (data.message ? ". (" + data.message + ")" : ""), 2000);
                             }
                         });
                     }

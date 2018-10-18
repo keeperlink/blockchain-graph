@@ -8,6 +8,14 @@ function Utils() {
         return (typeof a === 'function');
     }
 
+    function isObject(a) {
+        return (typeof a === 'object');
+    }
+
+    function isString(a) {
+        return (typeof a === 'string');
+    }
+
     function isNumber(a) {
         return (typeof a === 'number');
     }
@@ -82,8 +90,8 @@ function Utils() {
     }
 
     function parseTransform(transform) {
-        if (transform) {
-            var matrix = {x: 0, y: 0, r:0, k: 1};
+        if (isString(transform)) {
+            var matrix = {x: 0, y: 0, r: 0, k: 1};
             var match = transform.match(/(\w+\((\-?\d+\.?\d*e?\-?\d*,?\s?)+\))+/g);
             for (var i = 0; i < match.length; i++) {
                 var s = match[i].match(/[\w\.\-]+/g), op = s[0];
@@ -102,7 +110,7 @@ function Utils() {
 
     function toTransform(m) {
         var transform = "";
-        if (m) {
+        if (isObject(m)) {
             if (isNumber(m.x) && isNumber(m.y)) {
                 transform = "translate(" + m.x + "," + m.y + ")";
             }

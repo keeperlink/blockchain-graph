@@ -1,0 +1,24 @@
+.graphd3-info {
+    font-size: 16px;
+    padding: 10px;
+    position: absolute;
+
+    .type, .property {
+        border: 1px solid #ccc;
+        display: inline-block;
+        font-size: 14px;
+        line-height: 1.428571429;
+        margin-left: 5px;
+        margin-top: 5px;
+        padding: 6px 12px;
+    }
+
+    .settings-menu-item {
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    a {
+        color: black;
+    }
+}

@@ -10,6 +10,7 @@
         <meta name="viewport" content="width=device-width">
         <title>Blockchain Graph Explorer</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
         <link rel="stylesheet" href="css/graphd3.css?v={version}"/>
     </head>
     <body onload="initGraph()">
@@ -60,7 +61,7 @@
         </header>
 
         <main>
-            
+
         </main>
 
         <footer class="footer">
@@ -70,7 +71,43 @@
             </div>
         </footer>
 
+        <div class="modal fade" id="colorDialog" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Graph Object Color Change</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>Apply to:</div><br/>
+                        <div class="radio">
+                            <label class="radio"><input type="radio" name="entityColorScope" value="one" checked>This object</label>
+                        </div>
+                        <div class="radio">
+                            <label class="radio"><input type="radio" name="entityColorScope" value="all">All current objects of this class</label>
+                        </div>
+                        <div class="radio">
+                            <label class="radio"><input type="radio" name="entityColorScope" value="class">Object class</label>
+                        </div>
+                        <hr/>
+                        <div>
+                            <span>Pick color: &nbsp;</span>
+                            <input type="text" size="7" id="entityColorInput">
+                            <input type="color" id="entityColorPicker"/>
+                            <button type="button" class="btn btn-secondary btn-sm" id="entityColorReset"><i class="fa fa-undo" aria-hidden="true"></i> Reset</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>

@@ -9,7 +9,7 @@ var conf = require('./conf'),
         gulp = require('gulp');
 
 gulp.task('html', function () {
-    return gulp.src('src/main/html/**/*.html')
+    return gulp.src(conf.paths.src +'/html/**/*.html')
             .pipe(version({value: '%MDS%', replaces: [/{version}/g]}))
             .pipe(minifyHTML({collapseWhitespace: true}))
             .pipe(gulp.dest(conf.paths.dist))

@@ -29,9 +29,9 @@ function DrawGraphElements() {
         return node
                 .append('g')
                 .attr('class', function (d) {
-                    var i, classes = 'node';
+                    var classes = 'node';
                     if (opt.highlights) {
-                        for (i = 0; i < opt.highlights.length; i++) {
+                        for (var i = 0; i < opt.highlights.length; i++) {
                             var h = opt.highlights[i];
                             if (d.type === h.class && d.prop[h.property] === h.value) {
                                 classes += ' node-highlighted';
@@ -67,9 +67,7 @@ function DrawGraphElements() {
                 .attr('class', 'outline')
                 .attr('r', opt.nodeRadius)
                 .style('fill', opt.entityColor)
-                .style('stroke', function (d) {
-                    return d3.rgb(opt.entityColor(d)).darker(1);
-                })
+                .style('stroke', nodeStrokeColor)
                 .append('title')
                 .text(toTitleString);
     }
@@ -77,9 +75,7 @@ function DrawGraphElements() {
     function appendTextToNode(node) {
         return node.filter(nodeHasText)
                 .append('text')
-                .attr('class', function (d) {
-                    return 'text';
-                })
+                .attr('class', 'text')
                 .attr('fill', 'black')
                 .attr('font-size', '10px')
                 .attr('pointer-events', 'none')
@@ -87,7 +83,6 @@ function DrawGraphElements() {
                 .attr('y', '4px')
                 .html(getNodeText);
     }
-
 
     function appendLink(newLinks) {
         return newLinks
@@ -121,6 +116,17 @@ function DrawGraphElements() {
                 .text(getLinkText);
     }
 
+    function updateColors() {
+        var links = d3.selectAll(".link");
+        links.selectAll('.outline').style('fill', opt.entityColor).style('stroke', opt.entityColor);
+        links.selectAll('.text').style('fill', opt.entityColor);
+        var nodes = d3.selectAll(".node");
+        nodes.selectAll('.outline').style('fill', opt.entityColor).style('stroke', nodeStrokeColor);
+    }
+
+    function nodeStrokeColor(d) {
+        return d3.rgb(opt.entityColor(d)).darker(1);
+    }
     function nodeHasText(d) {
         return getNodeText(d) !== undefined;
     }
@@ -147,6 +153,7 @@ function DrawGraphElements() {
         appendNodesToGraph: appendNodesToGraph,
         appendLinksToGraph: appendLinksToGraph,
         appendTextToLink: appendTextToLink,
+        updateColors: updateColors,
         nodeHasText: nodeHasText,
         getNodeText: getNodeText,
         linkHasText: linkHasText,

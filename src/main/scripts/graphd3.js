@@ -15,20 +15,25 @@ function GraphD3(_selector, _options) {
     var dataPorter = new DataPorter();
 
     var container, simulation, svg, svgg, svgNodes, svgLinks;
-    var nodeClasses2colors = {}, linkClasses2colors = {}, numClasses = 0;
+    var numClasses = 0;
     var nodes = [], links = [];
     var zoom = d3.zoom();
     var options = {
-        viewMode: "",
+        viewMode: 'TxOut',
         arrowSize: 6,
+        nodeRadius: 25,
         colors: colors(),
         nodeColors: {},
         linkColors: {},
-        highlights: undefined,
-        data: undefined,
-        dataUrl: undefined,
-        nodeRadius: 25,
         defaultLinkColor: '#a5abb6'
+    };
+    var customSettings = {
+        viewMode: undefined,
+        arrowSize: undefined,
+        nodeRadius: undefined,
+        highlights: undefined,
+        nodeClasses2colors: {},
+        linkClasses2colors: {}
     };
 
 //******************************************************************************
@@ -36,11 +41,18 @@ function GraphD3(_selector, _options) {
 
     function init(_options) {
         utils.merge(options, _options);
+        Object.assign(customSettings, options);
         createGraphContainer();
-        infoPanel.init(entityColor);
+        infoPanel.init({
+            entityColor: entityColor,
+            handlers: {
+                onColorChange: onColorChange,
+                onColorReset: onColorReset
+            }
+        });
         drawGraphElements.init(container, {
-            highlights: options.highlights,
-            nodeRadius: options.nodeRadius,
+            highlights: customSettings.highlights,
+            nodeRadius: customSettings.nodeRadius,
             entityColor: entityColor,
             handlers: {
                 node: {
@@ -66,7 +78,7 @@ function GraphD3(_selector, _options) {
                 .force("link", d3.forceLink(links).distance(100).id(function (d) {
                     return d.id;
                 }))
-                .force('collide', d3.forceCollide(options.nodeRadius * 2).strength(0.2))
+                .force('collide', d3.forceCollide(customSettings.nodeRadius * 2).strength(0.2))
                 .on('tick', onSimulationTick)
                 .on('end', onSimulationStop);
     }
@@ -113,7 +125,7 @@ function GraphD3(_selector, _options) {
 //        var tm = new utils.Timer();
         transformView.transformNodes();
 //        var nodesTime = tm.time();
-        transformView.transformLinks(options.nodeRadius, options.arrowSize);
+        transformView.transformLinks(customSettings.nodeRadius, options.arrowSize);
 //        console.log("Tick time:", nodesTime, tm.time());
     }
 
@@ -188,6 +200,53 @@ function GraphD3(_selector, _options) {
         unstickNode(d.target, true);
     }
 
+    function onColorChange(entity, newColor, changeScope) {
+        console.log('onColorChange() entity:', entity, ', newColor:', newColor, ', changeScope:', changeScope);
+        if (changeScope === 'one') {
+//            setEntityCustomColor(entity, newColor);
+            entity.user = entity.user || {};
+            entity.user.color = newColor;
+        } else if (changeScope === 'all') {
+            (isLink(entity) ? links : nodes).forEach(function (d) {
+                if (d.type === entity.type && isNode(d) === isNode(entity)) {
+                    d.user = d.user || {};
+                    d.user.color = newColor;
+                }
+            });
+        } else {
+            if (isLink(entity)) {
+                customSettings.linkClasses2colors[entity.type] = newColor;
+            } else {
+                customSettings.nodeClasses2colors[entity.type] = newColor;
+            }
+        }
+        drawGraphElements.updateColors();
+    }
+
+    function onColorReset(entity, changeScope) {
+        console.log('onColorReset() entity:', entity, ', changeScope:', changeScope);
+        if (changeScope === 'one') {
+            if (entity.user) {
+                delete entity.user.color;
+            }
+        } else if (changeScope === 'all') {
+            (isLink(entity) ? links : nodes).forEach(function (d) {
+                if (d.user && d.type === entity.type) {
+                    delete d.user.color;
+                }
+            });
+        } else {
+            if (isLink(entity)) {
+                customSettings.linkClasses2colors[entity.type] = options.linkColors[entity.type];
+            } else {
+                console.log('cc:', customSettings.nodeClasses2colors[entity.type], options.nodeColors[entity.type]);
+                customSettings.nodeClasses2colors[entity.type] = options.nodeColors[entity.type];
+            }
+        }
+        drawGraphElements.updateColors();
+    }
+
+
 //******************************************************************************
 // Various Actions
 
@@ -199,11 +258,23 @@ function GraphD3(_selector, _options) {
         updateSimulation();
     }
 
+    function isNode(d) {
+        return !d.source;
+    }
+
+    function isLink(d) {
+        return d.source;
+    }
+
     function stickNode(d, temp) {
         if (!temp || !d.fx) {
             d.fx = d.x;
             d.fy = d.y;
-            d.tmpStick = temp;
+            if (temp) {
+                d.tmpStick = temp;
+            } else {
+                delete d.tmpStick;
+            }
         }
     }
 
@@ -211,6 +282,7 @@ function GraphD3(_selector, _options) {
         if (!temp || d.tmpStick) {
             delete d.fx;
             delete d.fy;
+            delete d.tmpStick;
         }
     }
 
@@ -237,13 +309,13 @@ function GraphD3(_selector, _options) {
     }
 
     function nodeColor(cls) {
-        var color = nodeClasses2colors[cls];
+        var color = customSettings.nodeClasses2colors[cls];
         if (!color) {
             color = options.nodeColors[cls];
             if (!color) {
                 color = options.colors[numClasses % options.colors.length];
             }
-            nodeClasses2colors[cls] = color;
+            customSettings.nodeClasses2colors[cls] = color;
             numClasses++;
         }
         return color;
@@ -254,13 +326,13 @@ function GraphD3(_selector, _options) {
     }
 
     function linkColor(cls) {
-        var color = linkClasses2colors[cls];
+        var color = customSettings.linkClasses2colors[cls];
         if (!color) {
             color = options.linkColors[cls];
             if (!color) {
                 color = defaultColor();
             }
-            linkClasses2colors[cls] = color;
+            customSettings.linkClasses2colors[cls] = color;
         }
         return color;
     }
@@ -270,7 +342,10 @@ function GraphD3(_selector, _options) {
     }
 
     function entityColor(d) {
-        return d.source ? linkColorEntity(d) : nodeColorEntity(d);
+        if (d.user && d.user.color) {
+            return d.user.color;
+        }
+        return isLink(d) ? linkColorEntity(d) : nodeColorEntity(d);
     }
 
     function colors() {
@@ -311,10 +386,10 @@ function GraphD3(_selector, _options) {
     function updateFromUrl(url, body, pos, callback) {
         var tm = new utils.Timer();
         body.entityTypes = ['transaction', 'output'];
-        if (options.viewMode === 'TxOutAddr') {
+        if (customSettings.viewMode === 'TxOutAddr') {
             body.entityTypes = ['transaction', 'output', 'address'];
         }
-        body.viewMode = options.viewMode;
+        body.viewMode = customSettings.viewMode;
         body.existing = nodes.map(function (d) {
             return d.id;
         }).concat(links.map(function (d) {
@@ -350,9 +425,6 @@ function GraphD3(_selector, _options) {
 
     function updateWithData(externalData, pos, clearOldData) {
         var data = dataPorter.importData(externalData);
-        if (clearOldData) {
-            clear();
-        }
         if (pos) {
 //            console.log("updateWithData() pos:", pos);
             data.nodes.forEach(function (n) {
@@ -360,12 +432,15 @@ function GraphD3(_selector, _options) {
                 n.y = pos.y;
             });
         }
-        if (data.transform) {
-            var t = data.transform;
+        if (data.configuration && data.configuration.transform) {
+            var t = data.configuration.transform;
             svg.call(zoom.transform, d3.zoomIdentity.translate(t.x, t.y).scale(t.k));
         }
-        if (data.viewMode) {
-            options.viewMode = data.viewMode;
+        if (data.configuration) {
+            Object.assign(customSettings, data.configuration);
+        }
+        if (clearOldData) {
+            clear();
         }
         updateLinks(data.links);
         updateNodes(data.nodes);
@@ -375,11 +450,11 @@ function GraphD3(_selector, _options) {
     }
 
     function getExportData() {
+        customSettings.transform = utils.parseTransform(svgg.attr('transform'));
         return dataPorter.exportData({
             nodes: nodes,
             links: links,
-            transform: svgg.attr('transform'),
-            viewMode: options.viewMode
+            configuration: customSettings
         });
     }
 
@@ -419,9 +494,9 @@ function GraphD3(_selector, _options) {
     return {
         viewMode: function (v) {
             if (v) {
-                options.viewMode = v;
+                customSettings.viewMode = v;
             }
-            return options.viewMode;
+            return customSettings.viewMode;
         },
         size: function () {
             return {
